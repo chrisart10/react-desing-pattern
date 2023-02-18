@@ -3,7 +3,7 @@ function NumberedList({ items, resourceName, itemComponent: ItemComponent }) {
 		<>
 			{items.map((item, index) => (
 				<>
-					<p>{index + 1}</p>
+					<h3>{index + 1}</h3>
 					<ItemComponent
 						key={item + toString(index)}
 						{...{ [resourceName]: item }}
