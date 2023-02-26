@@ -1,8 +1,7 @@
 import React from "react";
 import { ModalBackground, ModalBody } from "./ModalStyled";
 
-function UncontrolledModal({ children }) {
-	const [isOpened, setIsOpened] = React.useState(false);
+function ControlledModal({ isOpened, setIsOpened, children }) {
 	return isOpened ? (
 		<ModalBackground onClick={() => setIsOpened(false)}>
 			<ModalBody onClick={(e) => e.stopPropagation()}>
@@ -12,11 +11,7 @@ function UncontrolledModal({ children }) {
 				{children}
 			</ModalBody>
 		</ModalBackground>
-	) : (
-		<button type="button" onClick={() => setIsOpened(true)}>
-			Open Modal
-		</button>
-	);
+	) : null;
 }
 
-export default UncontrolledModal;
+export default ControlledModal;

@@ -8,58 +8,105 @@
 // import SmallProductsListItems from "./components/product/SmallProductsListItems";
 // import RegularList from "./components/RegularList";
 // import { peoples, products } from "./data/data";
-import CurrentUserLoader from "./components/CurrentUserLoader";
-import DataSource from "./components/DataSource";
-import ProductInfo from "./components/productInfo/ProductInfo";
-import ResourceLoader from "./components/ResourceLoader";
-import UserInfo from "./components/userInfo/UserInfo";
-import UserLoader from "./components/UserLoader";
-import axios from "axios";
+// import CurrentUserLoader from "./components/CurrentUserLoader";
+// import DataSource from "./components/DataSource";
+// import ProductInfo from "./components/productInfo/ProductInfo";
+// import ResourceLoader from "./components/ResourceLoader";
+// import UserInfo from "./components/userInfo/UserInfo";
+// import UserLoader from "./components/UserLoader";
+// import axios from "axios";
+import ControlledForm from "./components/form/ControlledForm";
+import ControlledModal from "./components/modal/ControlledModal";
+import UncontrolledForm from "./components/form/UncontrolledForm";
+import { useState } from "react";
+import UncontrolledOnBoardingFlow from "./components/onBoarding/UncontrolledOnBoardingFlow";
+import ControlledOnBoardingFlow from "./components/onBoarding/ControlledOnBoardingFlow";
 
-async function getServerData(url) {
-	const response = await axios.get(url);
-	return response.data;
+function StepOne({ goToNext }) {
+	return (
+		<>
+			<h1>step 1</h1>
+			<button
+				type="button"
+				onClick={() => goToNext({ name: "John Doe" })}>
+				Next
+			</button>
+		</>
+	);
 }
-
-async function getLocalStorageData(key) {
-	return localStorage.getItem(key);
+function StepTwo({ goToNext }) {
+	return (
+		<>
+			<h1>step 2</h1>
+			<button type="button" onClick={() => goToNext({ age: "23" })}>
+				Next
+			</button>
+		</>
+	);
 }
-
-function Text({ message }) {
-	return <h1>{message}</h1>;
+function StepThree({ goToNext }) {
+	return (
+		<>
+			<h1>step 3</h1>
+			<p>Congratulations, you have a discount!!</p>
+			<button type="button" onClick={() => goToNext({})}>
+				Next
+			</button>
+		</>
+	);
+}
+function StepFour({ goToNext }) {
+	return (
+		<>
+			<h1>step 4</h1>
+			<button
+				type="button"
+				onClick={() => goToNext({ hairColor: "Brown" })}>
+				Next
+			</button>
+		</>
+	);
 }
 
 function App() {
+	// controlled modal
+	const [isOpened, setIsOpened] = useState(false);
+	const handlerModal = (e) => setIsOpened(!isOpened);
+
+	// controled onBoarding Flow
+	const [onBoardingData, setOnboardingData] = useState("");
+	const [currentIndex, setCurrentIndex] = useState(0);
+	const goToNext = (stepData) => {
+		setCurrentIndex(currentIndex + 1);
+		setOnboardingData({
+			...onBoardingData,
+			...stepData,
+		});
+	};
+
 	return (
 		<>
-			<CurrentUserLoader userId="123">
-				<UserInfo />
-			</CurrentUserLoader>
-			<UserLoader userId="1234">
-				<UserInfo />
-			</UserLoader>
-			<UserLoader userId="5678">
-				<UserInfo />
-			</UserLoader>
-			<UserLoader userId="9854">
-				<UserInfo />
-			</UserLoader>
-			<ResourceLoader resourceUrl="/users/1234" resourceName="user">
-				<UserInfo />
-			</ResourceLoader>
-			<ResourceLoader resourceUrl="/products/1234" resourceName="product">
-				<ProductInfo />
-			</ResourceLoader>
-			<DataSource
-				getDataFunc={() => getServerData("/users/1234")}
-				resourceName="user">
-				<UserInfo />
-			</DataSource>
-			<DataSource
-				getDataFunc={() => getLocalStorageData("message")}
-				resourceName="message">
-				<Text />
-			</DataSource>
+			<ControlledModal isOpened={isOpened} setIsOpened={setIsOpened}>
+				<UncontrolledForm />
+				<ControlledForm />
+			</ControlledModal>
+			<button type="button" onClick={handlerModal}>
+				Open Modal
+			</button>
+			<UncontrolledOnBoardingFlow
+				onFinish={(data) => console.log("submited data", data)}>
+				<StepOne />
+				<StepTwo />
+				<StepThree />
+			</UncontrolledOnBoardingFlow>
+			<ControlledOnBoardingFlow
+				currentIndex={currentIndex}
+				goToNext={goToNext}>
+				<StepOne />
+				<StepTwo />
+				{onBoardingData.age >= 22 ? <StepThree /> : null}
+				<StepFour />
+			</ControlledOnBoardingFlow>
 		</>
 	);
 }
